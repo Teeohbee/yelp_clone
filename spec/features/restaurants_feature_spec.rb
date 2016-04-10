@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 feature 'restaurants' do
-
   context 'no restaurants hae been added' do
     scenario 'should display a prompt to add a restaurant' do
       visit '/restaurants'
@@ -31,10 +30,21 @@ feature 'restaurants' do
       expect(page).to have_content 'KFC'
       expect(current_path).to eq '/restaurants'
     end
+
+    context 'an invalid restaurant' do
+      it 'does not let you submit a name that is too short' do
+        visit '/restaurants'
+        click_link "Add a restaurant"
+        fill_in 'Name', with: 'kf'
+        click_button 'Create Restaurant'
+        expect(page).not_to have_css 'h2', text: 'kf'
+        expect(page).to have_content 'error'
+      end
+    end
   end
 
   context 'viewing restaurants' do
-    let!(:kfc) {Restaurant.create(name: 'KFC')}
+    let!(:kfc) { Restaurant.create(name: 'KFC') }
     scenario 'lets a user view a restaurant' do
       visit '/restaurants'
       click_link 'KFC'
@@ -44,8 +54,7 @@ feature 'restaurants' do
   end
 
   context 'editing restaurants' do
-
-    before {Restaurant.create name: 'KFC'}
+    before { Restaurant.create name: 'KFC' }
 
     scenario 'let a user edit a restaurant' do
       visit '/restaurants'
@@ -58,7 +67,7 @@ feature 'restaurants' do
   end
 
   context 'deleting restaurants' do
-    before {Restaurant.create name: 'KFC'}
+    before { Restaurant.create name: 'KFC' }
 
     scenario 'removes a restaurant when a user clicks a delete link' do
       visit '/restaurants'
@@ -67,4 +76,5 @@ feature 'restaurants' do
       expect(page).to have_content 'Restaurant deleted successfully'
     end
   end
+
 end
